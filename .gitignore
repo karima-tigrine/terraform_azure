@@ -1,0 +1,32 @@
+.terraform
+*.tfstate
+*.tfstate.backup
+
+
+# Why should we not push these files to GitHub?
+
+# Well, because there is no need to store in GitHub the .terraform folder, which Terraform uses as a temporary scratch directory to install the AWS plugins.
+# Be aware that there are many different plugin versions depending on your OS.
+
+# If you were to work in a team, a new developer from the crew can just clone/fork your repository and run terraform init to install the right AWS plugins on its machine.
+
+# Regarding the *.tfstate files, which Terraform uses to store the current state of our infrastructure, it is also a bad practice to keep them in a version control system.
+
+# Remember that every time you run Terraform, it stores information about the current state of your infrastructure in Terraform state file called terraform.tfstate. This file contains a JSON format that records a mapping from the Terraform resources in your configuration files to the representation of those resources in the real world.
+
+# If you’re using Terraform for a personal project, store the state in a single terraform.tfstate file that sits locally on your computer is fine.
+
+# However, if you wish to use Terraform as a team on an actual product, you would need to share the state of your infrastructure at some point so that multiple team members can interact and change the same infrastructure. Intuitively, sharing the state through the .tfstate file on GitHub could be a great idea, but it is not.
+
+# Why ?
+# Sensitive data
+# Data in a Terraform state file is stored in non secured plain text. This is a significant security issue since some Terraform resources store sensitive data. For instance, if you use the aws_db_instance resource to launch a postgres database, Terraform will store the username and passwords for the database in the state file, and you should never store plain text passwords in GitHub. ⛔️
+
+# Locking
+# What happens if multiple people from the same team change the infrastructure simultaneously? It would create conflicts because of locking issues. 🤯
+
+# Human error
+# It is frequent to either forget to pull the latest changes from GitHub before running Terraform or to push our latest changes to GitHub after running Terraform. Very quickly, this will create a lot of issues with people from the team with outdated state files, and as a result, it could provoque non-wanted rollbacks or duplicated resources.
+
+# Instead of using a version control tool, the best practice to manage a shared storage for state is to use Terraform’s built-in support for remote backend with Terraform Cloud.
+# We will see this on the next challenge of this day. Until then, let’s respect these best practices.
